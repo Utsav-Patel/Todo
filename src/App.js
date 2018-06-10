@@ -15,16 +15,21 @@ class App extends React.Component {
         itemIsDeleted: "Deleted Todo: ",
         inputStringIsEmpty: "Enter non-empty String"
       },
-      lastExecutedString: ""
+      lastExecutedString: "",
+      totalTodos: 0
     };
   }
 
   addToDo = () => {
     if (!(this.inputString.value === "")) {
       this.setState({
-        toDos: [...this.state.toDos, this.inputString.value],
+        toDos: [
+          ...this.state.toDos,
+          { todo: this.inputString.value, key: this.state.totalTodos }
+        ],
         lastExecutedString:
-          this.state.notification.itemIsAdded + " " + this.inputString.value
+          this.state.notification.itemIsAdded + " " + this.inputString.value,
+        totalTodos: this.state.totalTodos + 1
       });
     } else {
       this.setState({
@@ -34,10 +39,10 @@ class App extends React.Component {
   };
 
   deleteToDo = (index, event) => {
-    let temporaryString = this.state.toDos[index];
+    let temporaryString = this.state.toDos[index].todo;
     let temporaryTodos = this.state.toDos;
-    event.target.parentElement.style.display = "none";
-    // temporaryTodos.splice(index,1);
+    // event.target.parentElement.style.display = "none";
+    temporaryTodos.splice(index, 1);
     this.setState({
       toDos: temporaryTodos,
       lastExecutedString:
@@ -68,7 +73,7 @@ class App extends React.Component {
           <ul>
             {this.state.toDos.map((item, index) => (
               <RenderTodo
-                key={index}
+                key={item.key}
                 item={item}
                 deleteToDo={this.deleteToDo.bind(this, index)}
                 changeStateOfTodo={this.changeStateOfTodo}

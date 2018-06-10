@@ -7,7 +7,7 @@ const RenderTodo = props => {
   return (
     <li onClick={props.changeStateOfTodo}>
       <span className="toDo" contentEditable="true">
-        {props.item}
+        {props.item.todo}
       </span>
       <img
         className="deleteButton"
@@ -21,7 +21,7 @@ const RenderTodo = props => {
 RenderTodo.propTypes = {
   changeStateOfTodo: PropTypes.func,
   deleteToDo: PropTypes.func,
-  item: PropTypes.string
+  item: PropTypes.object
 };
 
 export default RenderTodo;
