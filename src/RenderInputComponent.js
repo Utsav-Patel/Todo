@@ -5,15 +5,15 @@ const RenderInput = props => {
   return (
     <input
       className="in"
-      onKeyDown={props.instance.onSpecialKey}
+      onKeyDown={props.onSpecialKey}
       type="text"
-      ref={node => (props.instance.inputString = node)}
+      ref={node => (props.myNeededString.inputString = node)}
       placeholder="Enter your title here..."
     />
   );
 };
 
-RenderInput.prototype = {
+RenderInput.propTypes = {
   instance: PropTypes.object
 };
 

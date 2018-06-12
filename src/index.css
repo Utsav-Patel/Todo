@@ -3,15 +3,11 @@ body {
 }
 
 .app {
-  margin: 10px;
   text-align: center;
   justify-content: center;
   min-width: 400px;
-}
-
-.setWidth {
-  margin-left: 25%;
-  margin-right: 25%;
+  width: 50%;
+  margin: auto;
 }
 
 .heading {

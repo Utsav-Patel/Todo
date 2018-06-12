@@ -3,7 +3,11 @@ import "./index.css";
 import PropTypes from "prop-types";
 
 const Notification = props => {
-  return <div className="notification">{props.lastExecutedString}</div>;
+  return (
+    <div className="notification">
+      {props.isErrorMessage ? props.errorString : props.lastExecutedString}
+    </div>
+  );
 };
 
 Notification.propTypes = {
