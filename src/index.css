@@ -19,10 +19,20 @@ body {
   color: mediumslateblue;
 }
 
+.heading2 {
+  background: white;
+  flex: 1;
+  font-size: 18px;
+  padding: 10px;
+  word-wrap: break-word;
+  overflow: auto;
+}
+
 .in {
   font-size: 16px;
   text-align: center;
-  margin: 10px;
+  min-width: 300px;
+  width: 95%;
   padding: 10px;
   border: none;
   background: antiquewhite;
@@ -37,58 +47,82 @@ body {
   float: right;
   height: 20px;
   width: 20px;
-  transition: 1s;
+  transition: 0.2s;
 }
 
 .deleteButton:hover {
-  background: red;
-}
-
-.deleteButton:active {
-  height: 0px;
-  width: 0px;
-}
-
-.myButtons {
-  text-align: center;
-  display: flex;
-  justify-content: space-around;
+  background: #a9a9a9;
 }
 
 .button {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 20px;
+  font-size: 16px;
   padding: 10px;
   border-radius: 10px;
 }
 
-.button:active {
-  font-size: 30px;
+@keyframes notify {
+  from {
+    opacity: 0;
+    word-wrap: break-word;
+    font-size: 0px;
+  }
+  to {
+    opacity: 1;
+    text-align: center;
+    margin: 10px;
+    font-size: 20px;
+    background: rgb(4, 4, 10);
+    color: cyan;
+    word-wrap: break-word;
+  }
 }
 
 .notification {
-  text-align: center;
-  margin: 10px;
-  font-size: 20px;
-  background: rgb(4, 4, 10);
-  color: cyan;
-  word-wrap: break-word;
-  transition: 2s;
+  animation-name: notify;
+  animation-duration: 1s;
+  animation-fill-mode: backwards;
 }
 
 ul {
   margin: 0;
   padding: 0;
+  display: flex;
+}
+
+.completed {
+  flex: 1;
+  font-size: 18px;
+  padding: 10px;
+  margin: 0.5px;
+  word-wrap: break-word;
+  overflow: auto;
+}
+
+@keyframes addTodo {
+  from {
+    opacity: 0;
+    font-size: 0px;
+  }
+  to {
+    opacity: 1;
+    cursor: pointer;
+    position: relative;
+    padding: 12px 8px 12px 50px;
+    list-style-type: none;
+    font-size: 18px;
+  }
 }
 
 ul li {
+  animation-name: addTodo;
+  animation-duration: 0.5s;
   cursor: pointer;
   position: relative;
   padding: 12px 8px 12px 50px;
   list-style-type: none;
   background: #eee;
   font-size: 18px;
-  transition: 0.2s;
 }
 
 ul li:nth-child(odd) {

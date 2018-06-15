@@ -1,9 +1,8 @@
 import React from "react";
 import "./index.css";
 import Notification from "./Notifications";
-import MyButtons from "./Buttons";
 import RenderTodo from "./RenderTodo";
-import RenderInput from "./RenderInputComponent";
+import RenderInput from "./RenderInput";
 import _uniqueId from "lodash/uniqueId";
 
 const notification = {
@@ -14,35 +13,42 @@ const notification = {
 const emptyStringErrorMessage = "Enter non-empty String";
 
 class App extends React.Component {
-  myNeededString = {
-    lastExecutedString: "",
-    inputString: ""
-  };
+  lastExecutedString = "";
+  timer = -1;
 
   constructor(props) {
     super(props);
     this.state = {
-      toDos: [],
+      toDos: JSON.parse(localStorage.getItem("toDos")) || [],
       isErrorShow: false
     };
   }
 
-  addToDo = () => {
-    if (!(this.myNeededString.inputString.value === "")) {
+  removeNotification = () => {
+    this.lastExecutedString = "";
+    this.setState({
+      isErrorShow: false
+    });
+  };
+
+  addToDo = inputString => {
+    if (!(inputString === "")) {
       this.setState({
         toDos: [
-          ...this.state.toDos,
-          { todo: this.myNeededString.inputString.value, key: _uniqueId() }
+          { todo: inputString, key: _uniqueId(), isCompleted: false },
+          ...this.state.toDos
         ],
         isErrorShow: false
       });
-      this.lastExecutedString =
-        notification.itemIsAdded + " " + this.myNeededString.inputString.value;
+      this.lastExecutedString = notification.itemIsAdded + " " + inputString;
+      localStorage.setItem("toDOs", JSON.stringify(this.state.toDos));
     } else {
       this.setState({
         isErrorShow: true
       });
     }
+    clearTimeout(this.timer);
+    this.timer = setTimeout(this.removeNotification, 2000);
   };
 
   deleteToDo = (index, event) => {
@@ -53,46 +59,79 @@ class App extends React.Component {
     this.setState({
       toDos: temporaryTodos
     });
+    localStorage.setItem("toDos", JSON.stringify(this.state.toDos));
+    clearTimeout(this.timer);
+    this.timer = setTimeout(this.removeNotification, 2000);
   };
 
-  clearInputString = () => {
-    this.myNeededString.inputString.value = "";
-  };
-
-  onSpecialKey = event => {
+  onSpecialKey = (inputObject, event) => {
     if (event.key === "Enter") {
-      this.addToDo();
-      this.clearInputString();
+      this.addToDo(inputObject.value);
+      inputObject.value = "";
     }
   };
 
-  changeStateOfTodo = event => {
-    event.target.classList.toggle("checked");
+  changeStateOfTodo = (index, event) => {
+    if (event.target.classList.contains("deleteButton")) return;
+    let temporaryTodos = this.state.toDos;
+    temporaryTodos[index].isCompleted = !temporaryTodos[index].isCompleted;
+    this.setState({
+      toDos: temporaryTodos
+    });
+    localStorage.setItem("toDos", JSON.stringify(this.state.toDos));
+  };
+
+  updateTodo = (editTodo, index) => {
+    if (editTodo === "") this.deleteToDo(index);
   };
 
   render() {
     return (
       <div className="app">
         <div className="heading">todos</div>
+        <RenderInput onSpecialKey={this.onSpecialKey} />
         <ul>
-          {this.state.toDos.map((item, index) => (
-            <RenderTodo
-              key={item.key}
-              item={item}
-              deleteToDo={this.deleteToDo.bind(this, index)}
-              changeStateOfTodo={this.changeStateOfTodo}
-            />
-          ))}
+          <div className="completed">
+            <div className="heading2">Remaining</div>
+            {this.state.toDos.map(
+              (item, index) =>
+                item.isCompleted ? (
+                  ""
+                ) : (
+                  <RenderTodo
+                    key={item.key}
+                    todo={item.todo}
+                    isCompleted={item.isCompleted}
+                    index={index}
+                    updateTodo={this.updateTodo}
+                    deleteToDo={this.deleteToDo}
+                    changeStateOfTodo={this.changeStateOfTodo}
+                  />
+                )
+            )}
+          </div>
+          <div className="completed">
+            <div className="heading2">Completed</div>
+            {this.state.toDos.map(
+              (item, index) =>
+                !item.isCompleted ? (
+                  ""
+                ) : (
+                  <RenderTodo
+                    key={item.key}
+                    todo={item.todo}
+                    isCompleted={item.isCompleted}
+                    index={index}
+                    updateTodo={this.updateTodo}
+                    deleteToDo={this.deleteToDo}
+                    changeStateOfTodo={this.changeStateOfTodo}
+                  />
+                )
+            )}
+          </div>
         </ul>
-        <RenderInput
-          onSpecialKey={this.onSpecialKey}
-          myNeededString={this.myNeededString}
-        />
-        <MyButtons
-          addToDo={this.addToDo}
-          clearInputString={this.clearInputString}
-        />
         <Notification
+          key={_uniqueId()}
           isErrorMessage={this.state.isErrorShow}
           lastExecutedString={this.lastExecutedString}
           errorString={emptyStringErrorMessage}
