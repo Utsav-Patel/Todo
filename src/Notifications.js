@@ -4,13 +4,16 @@ import PropTypes from "prop-types";
 const Notification = props => {
   return (
     <div className="notification">
-      {props.isErrorMessage ? props.errorString : props.lastExecutedString}
+      {props.isErrorShow ? props.errorMessage : props.message}
     </div>
   );
 };
 
 Notification.propTypes = {
-  lastExecutedString: PropTypes.string
+  key: PropTypes.number,
+  isErrorShow: PropTypes.boolean,
+  errorMessage: PropTypes.string,
+  message: PropTypes.string
 };
 
 export default Notification;

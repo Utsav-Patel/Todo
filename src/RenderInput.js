@@ -33,9 +33,7 @@ class RenderInput extends React.Component {
 }
 
 RenderInput.propTypes = {
-  instance: PropTypes.object,
-  addToDo: PropTypes.func,
-  clearInputString: PropTypes.func
+  onSpecialKey: PropTypes.func
 };
 
 export default RenderInput;

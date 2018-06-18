@@ -48,9 +48,13 @@ class RenderTodo extends React.Component {
 }
 
 RenderTodo.propTypes = {
+  key: PropTypes.number,
+  toDo: PropTypes.string,
+  isCompleted: PropTypes.boolean,
+  index: PropTypes.number,
   changeStateOfTodo: PropTypes.func,
-  deleteToDo: PropTypes.func,
-  item: PropTypes.object
+  updateTodo: PropTypes.func,
+  deleteToDo: PropTypes.func
 };
 
 export default RenderTodo;
