@@ -12,7 +12,6 @@ const RenderAllTodos = props => {
               todo={item.todo}
               isCompleted={props.isCompleted}
               index={index}
-              updateTodo={props.updateTodo}
               deleteToDo={props.deleteToDo}
               changeStateOfTodo={props.changeStateOfTodo}
             />

@@ -10,7 +10,6 @@ class RenderTodo extends React.Component {
 
   onKeyUp = event => {
     if (event.key === "Enter") event.preventDefault();
-    this.props.updateTodo(this.editTodo.textContent, this.props.index);
   };
 
   onKeyDown = event => {

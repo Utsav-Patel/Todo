@@ -4,13 +4,18 @@ import Notification from "./Notifications";
 import RenderInput from "./RenderInput";
 import _uniqueId from "lodash/uniqueId";
 import RenderAllTodos from "./RenderAllTodos";
+import qs from "qs";
+import fetch from "node-fetch";
 
-const NOTIFICATION = {
-  itemIsAdded: "Added Todo: ",
-  itemIsDeleted: "Deleted Todo: "
-};
-
-const EMPTY_STRING_ERROR_MESSAGE = "Enter non-empty String";
+import {
+  URL,
+  ADD_TODO_URL,
+  DELETE_TODO_URL,
+  CHANGE_STATE_OF_TODO,
+  LIST_ALL_TODOS,
+  NOTIFICATION,
+  EMPTY_STRING_ERROR_MESSAGE
+} from "./constants";
 
 class App extends React.Component {
   lastExecutedString = "";
@@ -19,9 +24,26 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      toDos: JSON.parse(localStorage.getItem("toDos")) || [],
+      toDos: [],
       isErrorShow: false
     };
+  }
+
+  componentDidMount() {
+    fetch(LIST_ALL_TODOS, {
+      // mode: "no-cors",
+      headers: {
+        "Content-Type": "application/x-wwww-form-urlencoded; charset=UTF-8"
+      }
+    })
+      .then(f => f.json())
+      .then(todos => {
+        this.setState({
+          toDos: todos,
+          isErrorShow: false
+        });
+      })
+      .catch(err => console.log(err));
   }
 
   removeNotification = () => {
@@ -49,19 +71,34 @@ class App extends React.Component {
     localStorage.setItem("toDos", JSON.stringify(this.state.toDos));
   }
 
+  updateTodoOnDB = (url, method, body) => {
+    fetch(url, {
+      method: method,
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+      },
+      body: qs.stringify(body)
+    });
+  };
+
   addToDo = inputString => {
     if (!this.isEmptyString(inputString)) {
       let temporaryTodos = this.state.toDos;
+      let key = _uniqueId();
       temporaryTodos.unshift({
         todo: inputString,
-        key: _uniqueId(),
+        key: key,
         isCompleted: false
       });
       this.setStateUpdateLocalStorage(temporaryTodos, false);
       this.lastExecutedString = NOTIFICATION.itemIsAdded + " " + inputString;
-    } else {
-      this.setStateUpdateLocalStorage(this.state.toDos, true);
-    }
+      this.updateTodoOnDB(ADD_TODO_URL, "POST", {
+        todo: inputString,
+        key: key,
+        isCompleted: false
+      });
+    } else this.setStateUpdateLocalStorage(this.state.toDos, true);
     this.setTimer();
   };
 
@@ -69,6 +106,7 @@ class App extends React.Component {
     this.lastExecutedString =
       NOTIFICATION.itemIsDeleted + " " + this.state.toDos[index].todo;
     let temporaryTodos = this.state.toDos;
+    this.updateTodoOnDB(DELETE_TODO_URL, "POST", this.state.toDos[index]);
     temporaryTodos.splice(index, 1);
     this.setStateUpdateLocalStorage(temporaryTodos, false);
     this.setTimer();
@@ -84,12 +122,10 @@ class App extends React.Component {
   changeStateOfTodo = (index, event) => {
     if (event.target.classList.contains("deleteButton")) return;
     let temporaryTodos = this.state.toDos;
+    this.removeNotification();
+    this.updateTodoOnDB(CHANGE_STATE_OF_TODO, "POST", this.state.toDos[index]);
     temporaryTodos[index].isCompleted = !temporaryTodos[index].isCompleted;
     this.setStateUpdateLocalStorage(temporaryTodos, this.state.isErrorShow);
-  };
-
-  updateTodo = (editTodo, index) => {
-    if (editTodo === "") this.deleteToDo(index);
   };
 
   render() {
@@ -103,7 +139,6 @@ class App extends React.Component {
             <RenderAllTodos
               toDos={this.state.toDos}
               isCompleted={false}
-              updateTodo={this.updateTodo}
               deleteToDo={this.deleteToDo}
               changeStateOfTodo={this.changeStateOfTodo}
             />
@@ -113,7 +148,6 @@ class App extends React.Component {
             <RenderAllTodos
               toDos={this.state.toDos}
               isCompleted={true}
-              updateTodo={this.updateTodo}
               deleteToDo={this.deleteToDo}
               changeStateOfTodo={this.changeStateOfTodo}
             />
