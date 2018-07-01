@@ -24,7 +24,7 @@ class RenderTodo extends React.Component {
   render() {
     return (
       <li
-        id={this.props.key}
+        id={this.props._id}
         className={this.props.isCompleted ? "checked" : ""}
         onClick={this.changeStateOfTodo}
       >
@@ -47,7 +47,7 @@ class RenderTodo extends React.Component {
 }
 
 RenderTodo.propTypes = {
-  key: PropTypes.number,
+  _id: PropTypes.string,
   toDo: PropTypes.string,
   isCompleted: PropTypes.boolean,
   index: PropTypes.number,

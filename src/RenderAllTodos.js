@@ -8,7 +8,7 @@ const RenderAllTodos = props => {
         (item, index) =>
           !item.isCompleted === props.isCompleted ? null : (
             <RenderTodo
-              key={item.key}
+              _id={item._id}
               todo={item.todo}
               isCompleted={props.isCompleted}
               index={index}

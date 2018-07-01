@@ -4,7 +4,6 @@ import Notification from "./Notifications";
 import RenderInput from "./RenderInput";
 import _uniqueId from "lodash/uniqueId";
 import RenderAllTodos from "./RenderAllTodos";
-import qs from "qs";
 import fetch from "node-fetch";
 
 import {
@@ -31,9 +30,8 @@ class App extends React.Component {
 
   componentDidMount() {
     fetch(LIST_ALL_TODOS, {
-      // mode: "no-cors",
       headers: {
-        "Content-Type": "application/x-wwww-form-urlencoded; charset=UTF-8"
+        "Content-Type": "application/json"
       }
     })
       .then(f => f.json())
@@ -72,32 +70,41 @@ class App extends React.Component {
   }
 
   updateTodoOnDB = (url, method, body) => {
-    fetch(url, {
+    let fetchPromise = fetch(url, {
       method: method,
-      mode: "no-cors",
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+        "Content-Type": "application/json"
       },
-      body: qs.stringify(body)
+      body: JSON.stringify(body)
     });
+    return fetchPromise;
   };
 
   addToDo = inputString => {
     if (!this.isEmptyString(inputString)) {
       let temporaryTodos = this.state.toDos;
-      let key = _uniqueId();
-      temporaryTodos.unshift({
-        todo: inputString,
-        key: key,
-        isCompleted: false
-      });
-      this.setStateUpdateLocalStorage(temporaryTodos, false);
-      this.lastExecutedString = NOTIFICATION.itemIsAdded + " " + inputString;
-      this.updateTodoOnDB(ADD_TODO_URL, "POST", {
-        todo: inputString,
-        key: key,
-        isCompleted: false
-      });
+      fetch(ADD_TODO_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          todo: inputString,
+          isCompleted: false
+        })
+      })
+        .then(f => f.json())
+        .then(key => {
+          temporaryTodos.push({
+            todo: inputString,
+            _id: key["_id"],
+            isCompleted: false
+          });
+          this.setStateUpdateLocalStorage(temporaryTodos, false);
+          this.lastExecutedString =
+            NOTIFICATION.itemIsAdded + " " + inputString;
+        })
+        .catch(err => console.dir(err));
     } else this.setStateUpdateLocalStorage(this.state.toDos, true);
     this.setTimer();
   };
