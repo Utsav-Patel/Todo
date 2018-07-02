@@ -1,4 +1,4 @@
-const URL = "http://localhost:3000";
+const URL = "https://evening-badlands-81713.herokuapp.com";
 const ADD_TODO_URL = URL + "/addTodo";
 const DELETE_TODO_URL = URL + "/deleteTodo";
 const CHANGE_STATE_OF_TODO_URL = URL + "/changeStateOfTodo";
