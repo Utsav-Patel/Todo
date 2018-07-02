@@ -7,11 +7,10 @@ import RenderAllTodos from "./RenderAllTodos";
 import fetch from "node-fetch";
 
 import {
-  URL,
   ADD_TODO_URL,
   DELETE_TODO_URL,
-  CHANGE_STATE_OF_TODO,
-  LIST_ALL_TODOS,
+  CHANGE_STATE_OF_TODO_URL,
+  LIST_ALL_TODOS_URL,
   NOTIFICATION,
   EMPTY_STRING_ERROR_MESSAGE
 } from "./constants";
@@ -29,7 +28,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    fetch(LIST_ALL_TODOS, {
+    fetch(LIST_ALL_TODOS_URL, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -130,7 +129,11 @@ class App extends React.Component {
     if (event.target.classList.contains("deleteButton")) return;
     let temporaryTodos = this.state.toDos;
     this.removeNotification();
-    this.updateTodoOnDB(CHANGE_STATE_OF_TODO, "POST", this.state.toDos[index]);
+    this.updateTodoOnDB(
+      CHANGE_STATE_OF_TODO_URL,
+      "POST",
+      this.state.toDos[index]
+    );
     temporaryTodos[index].isCompleted = !temporaryTodos[index].isCompleted;
     this.setStateUpdateLocalStorage(temporaryTodos, this.state.isErrorShow);
   };
