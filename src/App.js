@@ -60,23 +60,21 @@ class App extends React.Component {
     this.timer = setTimeout(this.removeNotification, 2000);
   };
 
-  setStateUpdateLocalStorage(toDos, isErrorShow) {
+  setState(toDos, isErrorShow) {
     this.setState({
       toDos: toDos,
       isErrorShow: isErrorShow
     });
-    localStorage.setItem("toDos", JSON.stringify(this.state.toDos));
   }
 
   updateTodoOnDB = (url, method, body) => {
-    let fetchPromise = fetch(url, {
+    fetch(url, {
       method: method,
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(body)
     });
-    return fetchPromise;
   };
 
   addToDo = inputString => {
@@ -99,12 +97,12 @@ class App extends React.Component {
             _id: key["_id"],
             isCompleted: false
           });
-          this.setStateUpdateLocalStorage(temporaryTodos, false);
+          this.setState(temporaryTodos, false);
           this.lastExecutedString =
             NOTIFICATION.itemIsAdded + " " + inputString;
         })
         .catch(err => console.dir(err));
-    } else this.setStateUpdateLocalStorage(this.state.toDos, true);
+    } else this.setState(this.state.toDos, true);
     this.setTimer();
   };
 
@@ -112,9 +110,9 @@ class App extends React.Component {
     this.lastExecutedString =
       NOTIFICATION.itemIsDeleted + " " + this.state.toDos[index].todo;
     let temporaryTodos = this.state.toDos;
-    this.updateTodoOnDB(DELETE_TODO_URL, "POST", this.state.toDos[index]);
     temporaryTodos.splice(index, 1);
-    this.setStateUpdateLocalStorage(temporaryTodos, false);
+    this.updateTodoOnDB(DELETE_TODO_URL, "POST", this.state.toDos[index]);
+    this.setState(temporaryTodos, false);
     this.setTimer();
   };
 
@@ -127,15 +125,15 @@ class App extends React.Component {
 
   changeStateOfTodo = (index, event) => {
     if (event.target.classList.contains("deleteButton")) return;
-    let temporaryTodos = this.state.toDos;
     this.removeNotification();
     this.updateTodoOnDB(
       CHANGE_STATE_OF_TODO_URL,
       "POST",
       this.state.toDos[index]
     );
+    let temporaryTodos = this.state.toDos;
     temporaryTodos[index].isCompleted = !temporaryTodos[index].isCompleted;
-    this.setStateUpdateLocalStorage(temporaryTodos, this.state.isErrorShow);
+    this.setState(temporaryTodos, this.state.isErrorShow);
   };
 
   render() {
